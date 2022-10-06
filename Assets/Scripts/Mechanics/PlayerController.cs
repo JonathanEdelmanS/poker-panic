@@ -51,18 +51,33 @@ namespace Platformer.Mechanics
             animator = GetComponent<Animator>();
         }
 
+
+
         protected override void Update()
         {
             if (controlEnabled)
-            {
-                move.x = Input.GetAxis("Horizontal");
-                if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump"))
-                    jumpState = JumpState.PrepareToJump;
-                else if (Input.GetButtonUp("Jump"))
-                {
-                    stopJump = true;
-                    Schedule<PlayerStopJump>().player = this;
-                }
+            {   
+                if(gameObject.name=="Player 1"){
+                move.x = Input.GetAxis("Horizontal1");
+                
+                    if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump1"))
+                        jumpState = JumpState.PrepareToJump;
+                    else if (Input.GetButtonUp("Jump1"))
+                    {
+                        stopJump = true;
+                        Schedule<PlayerStopJump>().player = this;
+                    }}
+                if(gameObject.name=="Player 2"){
+                    move.x = Input.GetAxis("Horizontal2");
+                    
+                    if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump2"))
+                        jumpState = JumpState.PrepareToJump;
+                    else if (Input.GetButtonUp("Jump2"))
+                    {
+                        stopJump = true;
+                        Schedule<PlayerStopJump>().player = this;
+                    }}
+                
             }
             else
             {
