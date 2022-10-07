@@ -20,22 +20,22 @@ public class CardSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        int index;
-        string cardName;
-        GameObject card;
-        Vector3 position;
-        LoadSprite cardProps;
         for (int i = 0; i < numCards; i++)
         {
-            index = Random.Range(0, cardNames.Count);
-            cardName = cardNames[index];
-            cardNames.RemoveAt(index);
-            position = new Vector3(Random.Range(xMin, xMax), Random.Range(yMin, yMax), -1.5f);
-            card = Instantiate(prefab, position, Quaternion.identity);
-            cardProps = card.GetComponent<LoadSprite>();
-            cardProps.SetTexture(cardName);
+            SpawnCard();
         }
-        
+    }
+
+    // Spawn a random card at a random location within bounds (and remove card from deck)
+    public void SpawnCard()
+    {
+        int index = Random.Range(0, cardNames.Count);
+        string cardName = cardNames[index];
+        cardNames.RemoveAt(index);
+        Vector3 position = new Vector3(Random.Range(xMin, xMax), Random.Range(yMin, yMax), -1.5f);
+        GameObject card = Instantiate(prefab, position, Quaternion.identity);
+        LoadSprite cardProps = card.GetComponent<LoadSprite>();
+        cardProps.SetTexture(cardName);
     }
 
     // Update is called once per frame
