@@ -482,7 +482,6 @@ GameObject:
   m_Component:
   - component: {fileID: 182556969}
   - component: {fileID: 182556968}
-  - component: {fileID: 182556970}
   m_Layer: 0
   m_Name: CardSpawner
   m_TagString: Untagged
@@ -576,19 +575,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &182556970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 182556967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ee5e1a80be5ad34ea52ac47f5b4f8de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 0}
 --- !u!1 &197176794
 GameObject:
   m_ObjectHideFlags: 0
