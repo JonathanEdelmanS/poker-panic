@@ -20,10 +20,23 @@ public class PokerUIManager : MonoBehaviour
     public void ChangeCard(string player, int offset, string cardName)
     {
         int index;
-        if (player == "Player 1") index = 0;
-        else if (player == "Player 2") index = 3;
-        else index = 6;
+        string cardBack;
+        if (player == "Player 1")
+        {
+            index = 0;
+            cardBack = "BackColor_Blue";
+        }
+        else if (player == "Player 2")
+        {
+            index = 3;
+            cardBack = "BackColor_Red";
+        }
+        else
+        {
+            index = 6;
+            cardBack = "BackColor_Black";
+        }
         index += offset;
-        cards[index].sprite = Resources.Load<Sprite>(cardName);
+        cards[index].sprite = Resources.Load<Sprite>(cardName != "" ? cardName : cardBack);
     }
 }

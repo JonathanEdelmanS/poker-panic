@@ -33,6 +33,7 @@ namespace Platformer.Mechanics
         /*internal new*/ public AudioSource audioSource;
         public Health health;
         public bool controlEnabled = true;
+        public PokerManager pokerManager;
 
         bool jump;
         Vector2 move;
@@ -55,36 +56,54 @@ namespace Platformer.Mechanics
 
         protected override void Update()
         {
-            if (controlEnabled)
-            {   
-                if(gameObject.name=="Player 1"){
-                move.x = Input.GetAxis("Horizontal1");
-                
-                    if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump1"))
-                        jumpState = JumpState.PrepareToJump;
-                    else if (Input.GetButtonUp("Jump1"))
-                    {
-                        stopJump = true;
-                        Schedule<PlayerStopJump>().player = this;
-                    }}
-                if(gameObject.name=="Player 2"){
-                    move.x = Input.GetAxis("Horizontal2");
-                    
-                    if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump2"))
-                        jumpState = JumpState.PrepareToJump;
-                    else if (Input.GetButtonUp("Jump2"))
-                    {
-                        stopJump = true;
-                        Schedule<PlayerStopJump>().player = this;
-                    }}
-                
+            if (controlEnabled) MovePlayer();
+            else move.x = 0;
+            UpdateJumpState();
+            base.Update();
+        }
+
+        void MovePlayer()
+        {
+            string horizontal, jump, down, left, right;
+            if (gameObject.name == "Player 1")
+            {
+                horizontal = "Horizontal1";
+                jump = "Jump1";
+                down = "Down1";
+                left = "Left1";
+                right = "Right1";
             }
             else
             {
-                move.x = 0;
+                horizontal = "Horizontal2";
+                jump = "Jump2";
+                down = "Down2";
+                left = "Left2";
+                right = "Right2";
             }
-            UpdateJumpState();
-            base.Update();
+
+            // check if holding down first
+            if (Input.GetAxis(down) == 1)
+            {
+                int index = -1;
+                if (Input.GetButtonDown(left)) index = 0;
+                if (Input.GetButtonDown(jump)) index = 1;
+                if (Input.GetButtonDown(right)) index = 2;
+                if (index != -1)
+                {
+                    pokerManager.RemoveCard(gameObject.name, index);
+                }
+            }
+
+            move.x = Input.GetAxis(horizontal);
+
+            if (jumpState == JumpState.Grounded && Input.GetButtonDown(jump))
+                jumpState = JumpState.PrepareToJump;
+            else if (Input.GetButtonUp(jump))
+            {
+                stopJump = true;
+                Schedule<PlayerStopJump>().player = this;
+            }
         }
 
         void UpdateJumpState()

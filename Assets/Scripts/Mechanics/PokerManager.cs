@@ -52,4 +52,11 @@ public class PokerManager : MonoBehaviour
         }
         return false;
     }
+
+    public void RemoveCard(string playerName, int index)
+    {
+        string[] cards = (playerName == "Player 1") ? player1Cards : player2Cards;
+        cards[index] = "";
+        pokerUIManager.ChangeCard(playerName, index, "");
+    }
 }
