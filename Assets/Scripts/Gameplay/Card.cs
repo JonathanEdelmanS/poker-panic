@@ -6,12 +6,16 @@ public class Card : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
     public PokerManager pokerManager;
+    public AudioClip tokenCollectAudio;
+    public float lifetime;
+    float expiration = Mathf.Infinity;
     string card;
 
     public void SetTexture(string cardName)
     {
         spriteRenderer.sprite = Resources.Load<Sprite>(cardName);
         card = cardName;
+        expiration = Time.time + lifetime;
     }
 
     // called when player "collects" this
@@ -20,7 +24,20 @@ public class Card : MonoBehaviour
         var player = other.gameObject;
         if (player.name != "Player 1" && player.name != "Player 2") return;
         bool collected = pokerManager.GivePlayer(player.name, card);
-        // Destroy this card only if the player collected it.
-        if (collected) Destroy(gameObject);
+        if (collected)
+        {
+            AudioSource.PlayClipAtPoint(tokenCollectAudio, transform.position);
+            Destroy(gameObject);
+        }
+    }
+
+    void Update()
+    {
+        if (spriteRenderer == null) return;
+        if (Time.time > expiration)
+        {
+            pokerManager.SpawnCard();
+            Destroy(gameObject);
+        }
     }
 }

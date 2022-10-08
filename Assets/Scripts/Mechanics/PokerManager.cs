@@ -12,6 +12,7 @@ public class PokerManager : MonoBehaviour
     };
     public CardSpawner cardSpawner;
     public PokerUIManager pokerUIManager;
+    public float[] times = new float[4];
     string[] player1Cards = new string[3] { "", "", "" };
     string[] player2Cards = new string[3] { "", "", "" };
     string[] streetCards = new string[4] { "", "", "", "" };
@@ -22,8 +23,27 @@ public class PokerManager : MonoBehaviour
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < 3; i++)
         {
-            cardSpawner.SpawnCard(DrawCard());
+            SpawnCard();
         }
+    }
+
+    void Update()
+    {
+        float thisFrame = Time.time;
+        float lastFrame = Time.time - Time.deltaTime;
+        for (int i = 0; i < 4; i++)
+        {
+            float time = times[i];
+            if (thisFrame > time && lastFrame < time)
+            {
+                FlipStreetCard(i);
+            }
+        }
+    }
+
+    public void SpawnCard()
+    {
+        cardSpawner.SpawnCard(DrawCard());
     }
 
     string DrawCard()
@@ -34,6 +54,12 @@ public class PokerManager : MonoBehaviour
         return card;
     }
 
+    void FlipStreetCard(int index)
+    {
+        string card = DrawCard();
+        streetCards[index] = card;
+        pokerUIManager.ChangeCard("Street", index, card);
+    }
 
     public bool GivePlayer(string playerName, string card)
     {
