@@ -19,7 +19,6 @@ public class Card : MonoBehaviour
     {
         var player = other.gameObject;
         if (player.name != "Player 1" && player.name != "Player 2") return;
-        Debug.Log(player.name + " touched " + card);
         bool collected = pokerManager.GivePlayer(player.name, card);
         // Destroy this card only if the player collected it.
         if (collected) Destroy(gameObject);

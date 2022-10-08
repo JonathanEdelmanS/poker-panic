@@ -11,9 +11,10 @@ public class PokerManager : MonoBehaviour
         "Diamond01", "Diamond06", "Diamond07", "Diamond08", "Diamond09", "Diamond10", "Diamond11", "Diamond12", "Diamond13"
     };
     public CardSpawner cardSpawner;
-    public string[] player1Cards = new string[3] { "", "", "" };
-    public string[] player2Cards = new string[3] { "", "", "" };
-    public string[] streetCards = new string[4] { "", "", "", "" };
+    public PokerUIManager pokerUIManager;
+    string[] player1Cards = new string[3] { "", "", "" };
+    string[] player2Cards = new string[3] { "", "", "" };
+    string[] streetCards = new string[4] { "", "", "", "" };
 
     // Start is called before the first frame update
     void Start()
@@ -36,15 +37,15 @@ public class PokerManager : MonoBehaviour
 
     public bool GivePlayer(string playerName, string card)
     {
-        // add card to the first empty slot in inventory
-        // returns true if card was added to inventory else false
+        // add card to the first empty slot in player's inventory
+        // returns true if there was space in inventory else false
         string[] cards = (playerName == "Player 1") ? player1Cards : player2Cards;
         for (int i = 0; i < 3; i++)
         {
             if (cards[i] == "")
             {
-                Debug.Log("destroy pls");
                 cards[i] = card;
+                pokerUIManager.ChangeCard(playerName, i, card);
                 cardSpawner.SpawnCard(DrawCard());
                 return true;
             }
