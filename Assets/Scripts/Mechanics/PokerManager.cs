@@ -79,10 +79,22 @@ public class PokerManager : MonoBehaviour
         return false;
     }
 
-    public void RemoveCard(string playerName, int index)
+    public bool RemoveCard(string playerName, int index)
     {
         string[] cards = (playerName == "Player 1") ? player1Cards : player2Cards;
+        bool output = cards[index] != "";
         cards[index] = "";
         pokerUIManager.ChangeCard(playerName, index, "");
+        return output;
+    }
+
+    public void Punch(GameObject player)
+    {
+        string[] cards = player.name == "Player 1" ? player1Cards : player2Cards;
+        List<int> toSelect = new List<int>();
+        for (int i = 0; i < 3; i++) if (cards[i] != "") toSelect.Add(i);
+        if (toSelect.Count == 0) return;
+        int index = toSelect[Random.Range(0, toSelect.Count)];
+        RemoveCard(player.name, index);
     }
 }

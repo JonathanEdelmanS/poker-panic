@@ -34,6 +34,7 @@ namespace Platformer.Mechanics
         public Health health;
         public bool controlEnabled = true;
         public PokerManager pokerManager;
+        public Punch punch;
 
         bool jump;
         Vector2 move;
@@ -91,7 +92,8 @@ namespace Platformer.Mechanics
                 if (Input.GetButtonDown(right)) index = 2;
                 if (index != -1)
                 {
-                    pokerManager.RemoveCard(gameObject.name, index);
+                    if (pokerManager.RemoveCard(gameObject.name, index))
+                        punch.Activate();
                 }
             }
 
