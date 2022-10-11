@@ -16,12 +16,13 @@ public class PokerManager : MonoBehaviour
     string[] player1Cards = new string[3] { "", "", "" };
     string[] player2Cards = new string[3] { "", "", "" };
     string[] streetCards = new string[4] { "", "", "", "" };
+    public int numStartCards = 2;
 
     // Start is called before the first frame update
     void Start()
     {
         // spawn in 3 cards at the beginning of the game
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < numStartCards; i++)
         {
             SpawnCard();
         }
@@ -79,13 +80,13 @@ public class PokerManager : MonoBehaviour
         return false;
     }
 
-    public bool RemoveCard(string playerName, int index)
+    public string RemoveCard(string playerName, int index)
     {
         string[] cards = (playerName == "Player 1") ? player1Cards : player2Cards;
-        bool output = cards[index] != "";
+        string oldCard = cards[index];
         cards[index] = "";
         pokerUIManager.ChangeCard(playerName, index, "");
-        return output;
+        return oldCard;
     }
 
     public void Punch(GameObject player)
@@ -95,6 +96,7 @@ public class PokerManager : MonoBehaviour
         for (int i = 0; i < 3; i++) if (cards[i] != "") toSelect.Add(i);
         if (toSelect.Count == 0) return;
         int index = toSelect[Random.Range(0, toSelect.Count)];
-        RemoveCard(player.name, index);
+        string oldCard = RemoveCard(player.name, index);
+        cardSpawner.SpawnCard(oldCard);
     }
 }

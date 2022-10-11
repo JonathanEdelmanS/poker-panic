@@ -92,7 +92,7 @@ namespace Platformer.Mechanics
                 if (Input.GetButtonDown(right)) index = 2;
                 if (index != -1)
                 {
-                    if (pokerManager.RemoveCard(gameObject.name, index))
+                    if (pokerManager.RemoveCard(gameObject.name, index) != "")
                         punch.Activate();
                 }
             }
