@@ -299,6 +299,7 @@ MonoBehaviour:
   - 20
   - 30
   - 40
+  numStartCards: 2
 --- !u!4 &87469947
 Transform:
   m_ObjectHideFlags: 0
