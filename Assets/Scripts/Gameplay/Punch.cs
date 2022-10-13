@@ -28,6 +28,8 @@ public class Punch : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         GameObject player = other.gameObject;
+        if (player.name != "Player 1" && player.name != "Player 2") return;
+        Debug.Log(player.name + " is here");
         if (player == enemy) pokerManager.Punch(player);
     }
 }
