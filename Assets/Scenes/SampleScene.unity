@@ -2745,6 +2745,7 @@ MonoBehaviour:
   enemy: {fileID: 599868419}
   pokerManager: {fileID: 87469946}
   thisCollider: {fileID: 517227215}
+  radius: 1
   expiration: 0.1
 --- !u!58 &517227215
 CircleCollider2D:
@@ -3141,6 +3142,7 @@ MonoBehaviour:
   enemy: {fileID: 838423049}
   pokerManager: {fileID: 87469946}
   thisCollider: {fileID: 665819311}
+  radius: 1
   expiration: 0.1
 --- !u!1 &671227344
 GameObject:
