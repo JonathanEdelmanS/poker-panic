@@ -480,6 +480,7 @@ MonoBehaviour:
   timer: {fileID: 159908987}
   player1: {fileID: 838423048}
   player2: {fileID: 599868427}
+  pokerManager: {fileID: 87469946}
   startTime: 60
 --- !u!1 &180357685
 GameObject:
