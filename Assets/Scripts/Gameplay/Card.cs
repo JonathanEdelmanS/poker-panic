@@ -6,10 +6,12 @@ public class Card : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
     public PokerManager pokerManager;
+    public CardSpawner cardSpawner;
     public AudioClip tokenCollectAudio;
     public float lifetime;
     float expiration = Mathf.Infinity;
     public string card;
+    public int index;
 
     public void SetTexture(string cardName)
     {
@@ -41,6 +43,7 @@ public class Card : MonoBehaviour
     {
         AudioSource.PlayClipAtPoint(tokenCollectAudio, transform.position);
         pokerManager.UnloadCard();
+        cardSpawner.RemoveCard(index);
         Destroy(gameObject);
     }
 
@@ -51,6 +54,7 @@ public class Card : MonoBehaviour
         {
             pokerManager.UnloadCard();
             pokerManager.SpawnCard();
+            cardSpawner.RemoveCard(index);
             Destroy(gameObject);
         }
     }
