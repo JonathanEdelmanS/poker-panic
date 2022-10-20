@@ -9,7 +9,7 @@ public class Card : MonoBehaviour
     public AudioClip tokenCollectAudio;
     public float lifetime;
     float expiration = Mathf.Infinity;
-    string card;
+    public string card;
 
     public void SetTexture(string cardName)
     {
@@ -23,12 +23,23 @@ public class Card : MonoBehaviour
     {
         var player = other.gameObject;
         if (player.name != "Player 1" && player.name != "Player 2") return;
-        bool collected = pokerManager.GivePlayer(player.name, card);
-        if (collected)
-        {
-            AudioSource.PlayClipAtPoint(tokenCollectAudio, transform.position);
-            Destroy(gameObject);
-        }
+        bool collected = pokerManager.TryGivePlayer(player.name, card);
+        if (collected) Collect();
+        else pokerManager.SetTouching(player.name, this);
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        var player = other.gameObject;
+        if (player.name != "Player 1" && player.name != "Player 2") return;
+        pokerManager.StopTouching(player.name, this);
+    }
+
+    public void Collect()
+    {
+        AudioSource.PlayClipAtPoint(tokenCollectAudio, transform.position);
+        pokerManager.UnloadCard();
+        Destroy(gameObject);
     }
 
     void Update()
@@ -36,6 +47,7 @@ public class Card : MonoBehaviour
         if (spriteRenderer == null) return;
         if (Time.time > expiration)
         {
+            pokerManager.UnloadCard();
             pokerManager.SpawnCard();
             Destroy(gameObject);
         }

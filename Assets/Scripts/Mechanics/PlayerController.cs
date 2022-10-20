@@ -66,24 +66,16 @@ namespace Platformer.Mechanics
         void MovePlayer()
         {
             string horizontal, jump, down, left, right;
-            if (gameObject.name == "Player 1")
-            {
-                horizontal = "Horizontal1";
-                jump = "Jump1";
-                down = "Down1";
-                left = "Left1";
-                right = "Right1";
-            }
-            else
-            {
-                horizontal = "Horizontal2";
-                jump = "Jump2";
-                down = "Down2";
-                left = "Left2";
-                right = "Right2";
-            }
+            horizontal = (gameObject.name == "Player 1") ? "Horizontal1" : "Horizontal2";
+            jump = (gameObject.name == "Player 1") ? "Jump1" : "Jump2";
+            down = (gameObject.name == "Player 1") ? "Down1" : "Down2";
+            left = (gameObject.name == "Player 1") ? "Left1" : "Left2";
+            right = (gameObject.name == "Player 1") ? "Right1" : "Right2";
 
-            // check if holding down first
+            // if pushed down this frame, punch!
+            if (Input.GetButtonDown(down)) punch.Activate();
+
+            // if is holding down and presses another direction, swap cards
             if (Input.GetAxis(down) == 1)
             {
                 int index = -1;
@@ -92,8 +84,7 @@ namespace Platformer.Mechanics
                 if (Input.GetButtonDown(right)) index = 2;
                 if (index != -1)
                 {
-                    if (pokerManager.RemoveCard(gameObject.name, index) != "")
-                        punch.Activate();
+                    pokerManager.AcceptCard(gameObject.name, index);
                 }
             }
 

@@ -19,6 +19,10 @@ public class PokerManager : MonoBehaviour
     string[] player2Cards = new string[3] { "", "", "" };
     string[] streetCards = new string[4] { "", "", "", "" };
     public int numStartCards = 2;
+    Card touchingP1 = null;  // the card Player would receive if they called AcceptCard()
+    Card touchingP2 = null;
+    int totalSpawned;
+    public int maxTotalSpawned = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +32,7 @@ public class PokerManager : MonoBehaviour
         {
             SpawnCard();
         }
+        totalSpawned = numStartCards;
     }
 
     void Update()
@@ -46,7 +51,15 @@ public class PokerManager : MonoBehaviour
 
     public void SpawnCard()
     {
+        if (totalSpawned >= maxTotalSpawned) return;
         cardSpawner.SpawnCard(DrawCard());
+        totalSpawned++;
+        Debug.Log(totalSpawned);
+    }
+
+    public void UnloadCard()
+    {
+        totalSpawned--;
     }
 
     string DrawCard()
@@ -64,9 +77,9 @@ public class PokerManager : MonoBehaviour
         pokerUIManager.ChangeCard("Street", index, card);
     }
 
-    public bool GivePlayer(string playerName, string card)
+    public bool TryGivePlayer(string playerName, string card)
     {
-        // add card to the first empty slot in player's inventory
+        // try to add card to the first empty slot in player's inventory
         // returns true if there was space in inventory else false
         string[] cards = (playerName == "Player 1") ? player1Cards : player2Cards;
         for (int i = 0; i < 3; i++)
@@ -75,11 +88,43 @@ public class PokerManager : MonoBehaviour
             {
                 cards[i] = card;
                 pokerUIManager.ChangeCard(playerName, i, card);
-                cardSpawner.SpawnCard(DrawCard());
+                SpawnCard();
                 return true;
             }
         }
         return false;
+    }
+
+    public void SetTouching(string playerName, Card card)
+    {
+        if (playerName == "Player 1" && !touchingP1) touchingP1 = card;
+        if (playerName == "Player 2" && !touchingP2) touchingP2 = card;
+    }
+
+    public void StopTouching(string playerName, Card card)
+    {
+        if (playerName == "Player 1" && touchingP1 == card) touchingP1 = null;
+        if (playerName == "Player 2" && touchingP2 == card) touchingP2 = null;
+    }
+
+    public void AcceptCard(string playerName, int index)
+    {
+        if (playerName == "Player 1" && touchingP1)
+        {
+            RemoveCard(playerName, index);
+            string card = touchingP1.card;
+            touchingP1.Collect();
+            TryGivePlayer(playerName, card);
+            touchingP1 = null;
+        }
+        if (playerName == "Player 2" && touchingP2)
+        {
+            RemoveCard(playerName, index);
+            string card = touchingP2.card;
+            touchingP2.Collect();
+            TryGivePlayer(playerName, card);
+            touchingP2 = null;
+        }
     }
 
     public string RemoveCard(string playerName, int index)
@@ -100,6 +145,7 @@ public class PokerManager : MonoBehaviour
         int index = toSelect[Random.Range(0, toSelect.Count)];
         string oldCard = RemoveCard(player.name, index);
         cardSpawner.SpawnCard(oldCard);
+        totalSpawned++;
     }
 
     public int CompareDecks()
