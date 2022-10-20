@@ -10,12 +10,17 @@ public class Punch : MonoBehaviour
     public float radius;
     public float expiration;
     float lifetime;
+    public Cooldown cooldown;
 
     public void Activate()
     {
         Vector3 thisPos = transform.position;
         Vector3 enemyPos = enemy.transform.position;
-        if ((thisPos - enemyPos).magnitude < radius) pokerManager.Punch(enemy);
+        if ((thisPos - enemyPos).magnitude < radius && cooldown.IsReady())
+        {
+            pokerManager.Punch(enemy);
+            cooldown.Reset();
+        }
     }
 
     //private void Update()
