@@ -12,6 +12,7 @@ public class Card : MonoBehaviour
     float expiration = Mathf.Infinity;
     public string card;
     public int index;
+    GameObject ring;
 
     public void SetTexture(string cardName)
     {
@@ -42,20 +43,26 @@ public class Card : MonoBehaviour
     public void Collect()
     {
         AudioSource.PlayClipAtPoint(tokenCollectAudio, transform.position);
+        Unload();
+    }
+
+    public void GiveRing(GameObject despawnRing)
+    {
+        ring = despawnRing;
+    }
+
+    void Unload()
+    {
         pokerManager.UnloadCard();
+        pokerManager.SpawnCard();
         cardSpawner.RemoveCard(index);
+        Destroy(ring);
         Destroy(gameObject);
     }
 
     void Update()
     {
         if (spriteRenderer == null) return;
-        if (Time.time > expiration)
-        {
-            pokerManager.UnloadCard();
-            pokerManager.SpawnCard();
-            cardSpawner.RemoveCard(index);
-            Destroy(gameObject);
-        }
+        if (Time.time > expiration) Unload();
     }
 }
