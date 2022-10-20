@@ -62,6 +62,11 @@ public class PokerManager : MonoBehaviour
         totalSpawned--;
     }
 
+    public void AddCard()
+    {
+        totalSpawned++;
+    }
+
     string DrawCard()
     {
         int index = Random.Range(0, deck.Count - 1);

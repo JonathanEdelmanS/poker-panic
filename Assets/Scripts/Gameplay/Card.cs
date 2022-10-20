@@ -23,7 +23,9 @@ public class Card : MonoBehaviour
     {
         var player = other.gameObject;
         if (player.name != "Player 1" && player.name != "Player 2") return;
+        pokerManager.UnloadCard();
         bool collected = pokerManager.TryGivePlayer(player.name, card);
+        pokerManager.AddCard();
         if (collected) Collect();
         else pokerManager.SetTouching(player.name, this);
     }
