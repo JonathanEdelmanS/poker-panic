@@ -158,18 +158,36 @@ public class PokerManager : MonoBehaviour
         List<string> p1cards = new List<string>();
         List<string> p2cards = new List<string>();
 
+        string cardval = "";
         foreach (string card in player1Cards) {
-            if (card != "")
-                p1cards.Add(card.Substring(card.Length-2,2) + card.Substring(0, card.Length-2));
+            if (card != "") {
+                cardval = card.Substring(card.Length-2,2);
+                if (cardval == "01")
+                    p1cards.Add("14" + card.Substring(0, card.Length-2));
+                else
+                    p1cards.Add(cardval + card.Substring(0, card.Length-2));
+            }
         }
         foreach (string card in player2Cards) {
-            if (card != "")
-                p2cards.Add(card.Substring(card.Length-2,2) + card.Substring(0, card.Length-2));
+            if (card != "") {
+                cardval = card.Substring(card.Length-2,2);
+                if (cardval == "01")
+                    p2cards.Add("14" + card.Substring(0, card.Length-2));
+                else
+                    p2cards.Add(cardval + card.Substring(0, card.Length-2));
+            }
         }
         foreach (string card in streetCards) {
             if (card != "") {
-                p1cards.Add(card.Substring(card.Length-2,2) + card.Substring(0, card.Length-2));
-                p2cards.Add(card.Substring(card.Length-2,2) + card.Substring(0, card.Length-2));
+                cardval = card.Substring(card.Length-2,2);
+                if (cardval == "01") {
+                    p1cards.Add("14" + card.Substring(0, card.Length-2));
+                    p2cards.Add("14" + card.Substring(0, card.Length-2));
+                }
+                else {
+                    p1cards.Add(cardval + card.Substring(0, card.Length-2));
+                    p2cards.Add(cardval + card.Substring(0, card.Length-2));
+                }
             }
         }
         p1cards.Sort();
@@ -316,8 +334,8 @@ public class PokerManager : MonoBehaviour
 
     public int CompareHands(List<string> suits1, List<int> values1, List<string> suits2, List<int> values2) {
         // 0: Tie   1: Player1 wins     2: Player2 wins
-        int player1rank = rankHand(suits1, values1);
-        int player2rank = rankHand(suits2, values2);
+        double player1rank = rankHand(suits1, values1);
+        double player2rank = rankHand(suits2, values2);
         if (player1rank == player2rank) {
             int i = 4;
             while (values1[i] == values2[i] && i > 0)
@@ -328,16 +346,21 @@ public class PokerManager : MonoBehaviour
                 return 1;
             return 2;
         } 
-        if (player1rank < player2rank)
+        if (player1rank > player2rank)
             return 1;
         return 2;
     }
 
-    public int rankHand(List<string> suits, List<int> values)
+    public double rankHand(List<string> suits, List<int> values)
     {
-        // 1. Royal flush   2. Straight flush   3. Four of kind
-        // 4. Full house    5. Flush    6. Straight     7. Three of kind
-        // 8. Two pair      9. Pair     10. High Card
+        // 9. Royal flush   8. Straight flush   7. Four of kind
+        // 6. Full house    5. Flush    4. Straight     3. Three of kind
+        // 2. Two pair      1. Pair     0. High Card
+        // Plus values of high cards
+        List<double> dvalues = new List<double>();
+        foreach (int val in values)
+            dvalues.Add(Convert.ToDouble(val));
+
         bool straight = true;
         for (int i=1; i < 5; i++) {
             if (values[i] != values[i-1] + 1)
@@ -351,29 +374,43 @@ public class PokerManager : MonoBehaviour
 
         if (straight && flush) {
             if (values[4] == 14) {
-                return 1;
+                return 9.0;
             }
-            return 2;
+            return 8.0;
         }
-        if (values[0] == values[3] || values[1] == values[4])
-            return 3;
-        if ((values[0] == values[2] && values[3] == values[4]) || (values[0] == values[1] && values[2] == values[4]))
-            return 4;
+
+        if (values[0] == dvalues[3] || values[1] == values[4])
+            return 7.0 + dvalues[1]/15;
+
+        if (values[0] == values[2] && values[3] == values[4])
+            return 6.0 + dvalues[0]/15 + dvalues[3]/225;
+        if (values[0] == values[1] && values[2] == values[4])
+            return 6.0 + dvalues[2]/15 + dvalues[0]/225;
+
         if (flush)
-            return 5;
+            return 5.0;
         if (straight)
-            return 6;
+            return 4.0;
+
         if (values[0] == values[2] || values[1] == values[3] || values[2] == values[4])
-            return 7;
-        int numPairs = 0;
-        for (int i=1; i<5; i++) {
-            if (values[i] == values[i-1])
-                numPairs++;
-        }
-        if (numPairs == 2)
-            return 8;
-        if (numPairs == 1)
-            return 9;
-        return 10;
+            return 3.0 + dvalues[2]/15;
+
+        if (values[0] == values[1] && values[2] == values[3])
+            return 2.0 + dvalues[2]/15 + dvalues[0]/225;
+        if (values[0] == values[1] && values[3] == values[4])
+            return 2.0 + dvalues[3]/15 + dvalues[0]/225;
+        if (values[1] == values[2] && values[3] == values[4])
+            return 2.0 + dvalues[3]/15 + dvalues[1]/225;
+
+        if (values[0] == values[1])
+            return 1.0 + dvalues[0]/15;
+        if (values[1] == values[2])
+            return 1.0 + dvalues[1]/15;
+        if (values[2] == values[3])
+            return 1.0 + dvalues[2]/15;
+        if (values[3] == values[4])
+            return 1.0 + dvalues[3]/15;
+
+        return 0.0;
     }
 }
