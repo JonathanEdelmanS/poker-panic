@@ -207,29 +207,34 @@ public class PokerManager : MonoBehaviour
             values2.Add(Int32.Parse(card.Substring(0,2)));
         }
 
+        List<string> newSuits = new List<string>();
+        List<int> newVals = new List<int>();
+        List<string> bestSuits = new List<string>();
+        List<int> bestVals = new List<int>();
+        
         if (p1cards.Count == 4) {
             suits1.Insert(0, "Null");
             values1.Insert(0, 0);
         }
         else if (p1cards.Count == 6) {
-            List<string> bestSuits = new List<string>();
-            List<int> bestVals = new List<int>();
+            bestSuits.Clear();
             bestSuits.AddRange(suits1);
             bestSuits.RemoveAt(0);
+            bestVals.Clear();
             bestVals.AddRange(values1);
             bestVals.RemoveAt(0);
             for (int i=1; i<6; i++) {
-                List<string> newSuits = new List<string>();
-                List<int> newVals = new List<int>();
+                newSuits.Clear();
                 newSuits.AddRange(suits1);
                 newSuits.RemoveAt(i);
+                newVals.Clear();
                 newVals.AddRange(values1);
                 newVals.RemoveAt(i);
                 int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
                 if (x == 2) {
-                    bestSuits = new List<string>();
+                    bestSuits.Clear();
                     bestSuits.AddRange(newSuits);
-                    bestVals = new List<int>();
+                    bestVals.Clear();
                     bestVals.AddRange(newVals);
                 }
             }
@@ -237,8 +242,8 @@ public class PokerManager : MonoBehaviour
             values1 = bestVals;
         }
         else if (p1cards.Count == 7) {
-            List<string> bestSuits = new List<string>();
-            List<int> bestVals = new List<int>();
+            bestSuits.Clear();
+            bestVals.Clear();
             bestSuits.AddRange(suits1);
             bestSuits.RemoveAt(0);
             bestSuits.RemoveAt(1);
@@ -247,8 +252,8 @@ public class PokerManager : MonoBehaviour
             bestVals.RemoveAt(1);
             for (int i=0; i<6; i++) {
                 for (int j=i+1; j<7; j++) {
-                    List<string> newSuits = new List<string>();
-                    List<int> newVals = new List<int>();
+                    newSuits.Clear();
+                    newVals.Clear();
                     newSuits.AddRange(suits1);
                     newSuits.RemoveAt(i);
                     newSuits.RemoveAt(j-1);
@@ -257,9 +262,9 @@ public class PokerManager : MonoBehaviour
                     newVals.RemoveAt(j-1);
                     int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
                     if (x == 2) {
-                        bestSuits = new List<string>();
+                        bestSuits.Clear();
                         bestSuits.AddRange(newSuits);
-                        bestVals = new List<int>();
+                        bestVals.Clear();
                         bestVals.AddRange(newVals);
                     }
                 }
@@ -268,29 +273,31 @@ public class PokerManager : MonoBehaviour
             values1 = bestVals;
         }
 
+        bestSuits = new List<string>();
+        bestVals = new List<int>();
         if (p2cards.Count == 4) {
             suits2.Insert(0, "Null");
             values2.Insert(0, 0);
         }
         else if (p2cards.Count == 6) {
-            List<string> bestSuits = new List<string>();
-            List<int> bestVals = new List<int>();
+            bestSuits.Clear();
+            bestVals.Clear();
             bestSuits.AddRange(suits2);
             bestSuits.RemoveAt(0);
             bestVals.AddRange(values2);
             bestVals.RemoveAt(0);
             for (int i=1; i<6; i++) {
-                List<string> newSuits = new List<string>();
-                List<int> newVals = new List<int>();
+                newSuits.Clear();
+                newVals.Clear();
                 newSuits.AddRange(suits2);
                 newSuits.RemoveAt(i);
                 newVals.AddRange(values2);
                 newVals.RemoveAt(i);
                 int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
                 if (x == 2) {
-                    bestSuits = new List<string>();
+                    bestSuits.Clear();
                     bestSuits.AddRange(newSuits);
-                    bestVals = new List<int>();
+                    bestVals.Clear();
                     bestVals.AddRange(newVals);
                 }
             }
@@ -298,8 +305,8 @@ public class PokerManager : MonoBehaviour
             values2 = bestVals;
         }
         else if (p2cards.Count == 7) {
-            List<string> bestSuits = new List<string>();
-            List<int> bestVals = new List<int>();
+            bestSuits.Clear();
+            bestVals.Clear();
             bestSuits.AddRange(suits2);
             bestSuits.RemoveAt(0);
             bestSuits.RemoveAt(1);
@@ -308,8 +315,8 @@ public class PokerManager : MonoBehaviour
             bestVals.RemoveAt(1);
             for (int i=0; i<6; i++) {
                 for (int j=i+1; j<7; j++) {
-                    List<string> newSuits = new List<string>();
-                    List<int> newVals = new List<int>();
+                    newSuits.Clear();
+                    newVals.Clear();
                     newSuits.AddRange(suits2);
                     newSuits.RemoveAt(i);
                     newSuits.RemoveAt(j-1);
@@ -318,9 +325,9 @@ public class PokerManager : MonoBehaviour
                     newVals.RemoveAt(j-1);
                     int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
                     if (x == 2) {
-                        bestSuits = new List<string>();
+                        bestSuits.Clear();
                         bestSuits.AddRange(newSuits);
-                        bestVals = new List<int>();
+                        bestVals.Clear();
                         bestVals.AddRange(newVals);
                     }
                 }
