@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class Cooldown : MonoBehaviour
 {
     public float cooldown = 10f;
-    public Text timer;
+    public Slider timer;
     float current;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +20,7 @@ public class Cooldown : MonoBehaviour
     void Update()
     {
         current = Mathf.Max(current - Time.deltaTime, 0f);
-        timer.text = (current != 0f) ? Mathf.Ceil(current).ToString() : "!!!";
+        timer.value = 1 - current / cooldown;
     }
 
     public bool IsReady()
