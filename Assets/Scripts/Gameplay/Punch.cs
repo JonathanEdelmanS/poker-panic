@@ -23,14 +23,19 @@ public class Punch : MonoBehaviour
         }
     }
 
-    //private void Update()
-    //{
-    //    lifetime -= Time.deltaTime;
-    //    if (lifetime <= 0f)
-    //    {
-    //        thisCollider.enabled = false;
-    //    }
-    //}
+    void Update()
+    {
+        if (PlayerPunchable()) {
+            Debug.Log('Player is punchable');
+        }
+    }
+
+    // detect if other player is within radius
+    private void PlayerPunchable() {
+        Vector3 thisPos = transform.position;
+        Vector3 enemyPos = enemy.transform.position;
+        return (thisPos - enemyPos).magnitude < radius && cooldown.IsReady()
+    }
 
     //void OnTriggerEnter2D(Collider2D other)
     //{
