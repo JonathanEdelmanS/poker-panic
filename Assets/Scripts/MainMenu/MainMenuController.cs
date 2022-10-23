@@ -6,15 +6,18 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
+    public int nextScene;
+
+    public float SceneLoadedTime;
  
     public void PlayGame()
     {
-         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + nextScene);
     }
 
-
-    public static void PlayGameStatic()
+    public float getSceneLoadedTime()
     {
-         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+          return SceneLoadedTime;
     }
+
 }

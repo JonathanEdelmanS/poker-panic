@@ -10,11 +10,12 @@ public class Timer : MonoBehaviour
     public PlayerController player1;
     public PlayerController player2;
     public PokerManager pokerManager;
+    public MainMenuController buttonToStart;
     public float startTime;
 
     void Update()
     {
-        float timeLeft = Mathf.Max(startTime - Time.time, 0);
+        float timeLeft = Mathf.Max(startTime - Time.timeSinceLevelLoad, 0);
         timer.text = Mathf.Round(timeLeft).ToString();
         if (timeLeft == 0)
         {
