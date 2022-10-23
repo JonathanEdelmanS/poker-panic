@@ -1,3 +1,4 @@
+using System.Threading;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ public class PokerManager : MonoBehaviour
     };
     public CardSpawner cardSpawner;
     public PokerUIManager pokerUIManager;
+    public Dictionary<string, string> handNames = new Dictionary<string, string>();
+    public Dictionary<string, int> handScores = new Dictionary<string, int>();
     public float[] times = new float[4];
     string[] player1Cards = new string[3] { "", "", "" };
     string[] player2Cards = new string[3] { "", "", "" };
@@ -27,6 +30,17 @@ public class PokerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // load the hands hashing
+        IEnumerable<String> hands_data_file = System.IO.File.ReadLines("Assets/Resources/hands.csv");
+        foreach (string line in hands_data_file) {
+            string[] tokens = line.Split('\t');
+            string hand = tokens[0]; 
+            int score = Int32.Parse(tokens[1]);
+            string name = tokens[2]; 
+            handNames.Add(hand, name);
+            handScores.Add(hand, score);
+        }
+
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < numStartCards; i++)
         {
@@ -79,6 +93,7 @@ public class PokerManager : MonoBehaviour
         string card = DrawCard();
         streetCards[index] = card;
         pokerUIManager.ChangeCard("Street", index, card);
+        HandsUpdated();
     }
 
     public bool TryGivePlayer(string playerName, string card)
@@ -93,6 +108,7 @@ public class PokerManager : MonoBehaviour
                 cards[i] = card;
                 pokerUIManager.ChangeCard(playerName, i, card);
                 SpawnCard();
+                HandsUpdated();
                 return true;
             }
         }
@@ -418,5 +434,32 @@ public class PokerManager : MonoBehaviour
             return 1.0 + dvalues[3]/15;
 
         return 0.0;
+    }
+
+    public List<string> GetCards(string[] hand) 
+    {
+        List<string> allCards = new List<string>();
+        foreach (string card in streetCards) 
+            if (card != "") allCards.Add(card); 
+        foreach (string card in hand) 
+            if (card != "") allCards.Add(card); 
+        allCards.Sort();
+        return allCards;
+    }
+
+    public void HandsUpdated() 
+    {
+        List<string> player1All = GetCards(player1Cards);
+        List<string> player2All = GetCards(player2Cards);
+
+        string player1Hand = String.Join(",", player1All);
+        string player2Hand = String.Join(",", player2All);
+
+        string player1HandName;
+        string player2HandName;
+        handNames.TryGetValue(player1Hand, out player1HandName);
+        handNames.TryGetValue(player2Hand, out player2HandName);
+
+        pokerUIManager.UpdateHandFeedback(player1HandName, player2HandName, 0);
     }
 }

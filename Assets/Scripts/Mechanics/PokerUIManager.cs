@@ -5,17 +5,16 @@ using UnityEngine.UI;
 
 public class PokerUIManager : MonoBehaviour
 {
-    //public Image player1Card1;
-    //public Image player1Card2;
-    //public Image player1Card3;
-    //public Image player2Card1;
-    //public Image player2Card2;
-    //public Image player2Card3;
-    //public Image streetCard1;
-    //public Image streetCard2;
-    //public Image streetCard3;
-    //public Image streetCard4;
     public Image[] cards = new Image[10];
+    public Text player1HandText;
+    public Text player2HandText;
+    public int winningPlayer = 0;
+
+    public void UpdateHandFeedback(string player1Text, string player2Text, int betterHand)
+    {
+        player1HandText.text = (player1Text == null) ? "" : player1Text;
+        player2HandText.text = (player2Text == null) ? "" : player2Text;
+    }
 
     public void ChangeCard(string player, int offset, string cardName)
     {
