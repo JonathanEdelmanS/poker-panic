@@ -11,9 +11,15 @@ public class Timer : MonoBehaviour
     public PlayerController player2;
     public PokerManager pokerManager;
     public float startTime;
+    public bool debugMode;
 
     void Update()
     {
+        if (debugMode) {
+            player1.controlEnabled = true;
+            player2.controlEnabled = true;
+            return;
+        }
         float timeLeft = Mathf.Max(startTime - Time.time, 0);
         timer.text = Mathf.Round(timeLeft).ToString();
         if (timeLeft == 0)

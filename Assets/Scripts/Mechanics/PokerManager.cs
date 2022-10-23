@@ -17,10 +17,11 @@ public class PokerManager : MonoBehaviour
     public PokerUIManager pokerUIManager;
     public Dictionary<string, string> handNames = new Dictionary<string, string>();
     public Dictionary<string, int> handScores = new Dictionary<string, int>();
+    int winningPlayer = -1;
     public float[] times = new float[4];
-    string[] player1Cards = new string[3] { "", "", "" };
-    string[] player2Cards = new string[3] { "", "", "" };
-    string[] streetCards = new string[4] { "", "", "", "" };
+    public string[] player1Cards = new string[3] { "", "", "" };
+    public string[] player2Cards = new string[3] { "", "", "" };
+    public string[] streetCards = new string[4] { "", "", "", "" };
     public int numStartCards = 2;
     Card touchingP1 = null;  // the card Player would receive if they called AcceptCard()
     Card touchingP2 = null;
@@ -166,6 +167,7 @@ public class PokerManager : MonoBehaviour
         string oldCard = RemoveCard(player.name, index);
         cardSpawner.SpawnCard(oldCard);
         totalSpawned++;
+        HandsUpdated();
     }
 
     public int CompareDecks()
@@ -460,6 +462,25 @@ public class PokerManager : MonoBehaviour
         handNames.TryGetValue(player1Hand, out player1HandName);
         handNames.TryGetValue(player2Hand, out player2HandName);
 
-        pokerUIManager.UpdateHandFeedback(player1HandName, player2HandName, 0);
+        int player1Score;
+        int player2Score;
+        handScores.TryGetValue(player1Hand, out player1Score);
+        handScores.TryGetValue(player2Hand, out player2Score);
+
+        // winner logic
+        if (player1Score == 0 && player2Score == 0) {
+            winningPlayer = -1;
+        }
+        else if (player2Score == 0 || player1Score < player2Score) {
+            winningPlayer = 1;
+        }
+        else if (player1Score == 0 || player1Score > player2Score) {
+            winningPlayer = 2;
+        }
+        else {
+            winningPlayer = 0;
+        }
+
+        pokerUIManager.UpdateHandFeedback(player1HandName, player2HandName, winningPlayer);
     }
 }
