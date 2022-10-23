@@ -26,13 +26,13 @@ public class Timer : MonoBehaviour
         {
             player1.controlEnabled = false;
             player2.controlEnabled = false;
-            int x = pokerManager.CompareDecks();
-            if (x == 0)
+            var (winner, handName) = pokerManager.CompareDecks();
+            if (winner == 0)
                 timer.text = "Players tied!";
-            if (x == 1)
-                timer.text = "Player 1 (white) wins!";
-            if (x == 2)
-                timer.text = "Player 2 (green) wins!";
+            if (winner == 1)
+                timer.text = "Player 1 (white) wins with " + handName;
+            if (winner == 2)
+                timer.text = "Player 2 (green) wins with " + handName;
         }
     }
 }
