@@ -5,17 +5,28 @@ using UnityEngine.UI;
 
 public class PokerUIManager : MonoBehaviour
 {
-    //public Image player1Card1;
-    //public Image player1Card2;
-    //public Image player1Card3;
-    //public Image player2Card1;
-    //public Image player2Card2;
-    //public Image player2Card3;
-    //public Image streetCard1;
-    //public Image streetCard2;
-    //public Image streetCard3;
-    //public Image streetCard4;
     public Image[] cards = new Image[10];
+    public Text player1HandText;
+    public Text player2HandText;
+    public Image player1Winning;
+    public Image player2Winning;
+    public int winningPlayer = 0;
+
+    public void Start() 
+    {
+        player1Winning.enabled = false;
+        player2Winning.enabled = false;
+    }
+
+    // betterHand: -1 for neither player having 5 cards, 0 for true tie, 1 for player 1, 2 for player 2
+    public void UpdateHandFeedback(string player1Text, string player2Text, int betterHand)
+    {
+        player1HandText.text = (player1Text == null) ? "" : player1Text;
+        player2HandText.text = (player2Text == null) ? "" : player2Text;
+
+        player1Winning.enabled = betterHand == 0 || betterHand == 1;
+        player2Winning.enabled = betterHand == 0 || betterHand == 2;
+    }
 
     public void ChangeCard(string player, int offset, string cardName)
     {

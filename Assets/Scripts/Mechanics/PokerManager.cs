@@ -1,3 +1,4 @@
+using System.Threading;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,10 +15,13 @@ public class PokerManager : MonoBehaviour
     };
     public CardSpawner cardSpawner;
     public PokerUIManager pokerUIManager;
+    public Dictionary<string, string> handNames = new Dictionary<string, string>();
+    public Dictionary<string, int> handScores = new Dictionary<string, int>();
+    int winningPlayer = -1;
     public float[] times = new float[4];
-    string[] player1Cards = new string[3] { "", "", "" };
-    string[] player2Cards = new string[3] { "", "", "" };
-    string[] streetCards = new string[4] { "", "", "", "" };
+    public string[] player1Cards = new string[3] { "", "", "" };
+    public string[] player2Cards = new string[3] { "", "", "" };
+    public string[] streetCards = new string[4] { "", "", "", "" };
     public int numStartCards = 2;
     Card touchingP1 = null;  // the card Player would receive if they called AcceptCard()
     Card touchingP2 = null;
@@ -27,6 +31,22 @@ public class PokerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // load the hands hashing
+        for (int i = 0; i < 16; i++) {
+            string pieceNumber = ((i < 10) ? "0" : "") + i;
+            IEnumerable<String> hands_data_file = System.IO.File.ReadLines("Assets/Resources/hands" + pieceNumber + ".csv");
+            foreach (string line in hands_data_file) {
+                string[] tokens = line.Split('\t');
+                string hand = tokens[0]; 
+                int score = Int32.Parse(tokens[1]);
+                string name = tokens[2]; 
+                handNames.Add(hand, name);
+                handScores.Add(hand, score);
+            }
+        }
+
+        Debug.Log(handNames.Count);
+
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < numStartCards; i++)
         {
@@ -79,6 +99,7 @@ public class PokerManager : MonoBehaviour
         string card = DrawCard();
         streetCards[index] = card;
         pokerUIManager.ChangeCard("Street", index, card);
+        HandsUpdated();
     }
 
     public bool TryGivePlayer(string playerName, string card)
@@ -93,6 +114,7 @@ public class PokerManager : MonoBehaviour
                 cards[i] = card;
                 pokerUIManager.ChangeCard(playerName, i, card);
                 SpawnCard();
+                HandsUpdated();
                 return true;
             }
         }
@@ -150,273 +172,77 @@ public class PokerManager : MonoBehaviour
         string oldCard = RemoveCard(player.name, index);
         cardSpawner.SpawnCard(oldCard);
         totalSpawned++;
+        HandsUpdated();
     }
 
-    public int CompareDecks()
+    // get the winning player and their hand
+    public (int WinningPlayer, string WinningHandName) CompareDecks()
     {
-        List<string> p1cards = new List<string>();
-        List<string> p2cards = new List<string>();
+        (string HandName, int HandScore) player1Hand = GetHandInfo(1);
+        (string HandName, int HandScore) player2Hand = GetHandInfo(2);
+        string player1HandName = player1Hand.HandName;
+        string player2HandName = player2Hand.HandName;
+        int player1Score = player1Hand.HandScore;
+        int player2Score = player2Hand.HandScore;
 
-        string cardval = "";
-        foreach (string card in player1Cards) {
-            if (card != "") {
-                cardval = card.Substring(card.Length-2,2);
-                if (cardval == "01")
-                    p1cards.Add("14" + card.Substring(0, card.Length-2));
-                else
-                    p1cards.Add(cardval + card.Substring(0, card.Length-2));
-            }
-        }
-        foreach (string card in player2Cards) {
-            if (card != "") {
-                cardval = card.Substring(card.Length-2,2);
-                if (cardval == "01")
-                    p2cards.Add("14" + card.Substring(0, card.Length-2));
-                else
-                    p2cards.Add(cardval + card.Substring(0, card.Length-2));
-            }
-        }
-        foreach (string card in streetCards) {
-            if (card != "") {
-                cardval = card.Substring(card.Length-2,2);
-                if (cardval == "01") {
-                    p1cards.Add("14" + card.Substring(0, card.Length-2));
-                    p2cards.Add("14" + card.Substring(0, card.Length-2));
-                }
-                else {
-                    p1cards.Add(cardval + card.Substring(0, card.Length-2));
-                    p2cards.Add(cardval + card.Substring(0, card.Length-2));
-                }
-            }
-        }
-        p1cards.Sort();
-        p2cards.Sort();
-
-        List<string> suits1 = new List<string>();
-        List<int> values1 = new List<int>();
-        List<string> suits2 = new List<string>();
-        List<int> values2 = new List<int>();
-
-        foreach (string card in p1cards) {
-            suits1.Add(card.Substring(2, card.Length-2));
-            values1.Add(Int32.Parse(card.Substring(0,2)));
-        }
-        foreach (string card in p2cards) {
-            suits2.Add(card.Substring(2, card.Length-2));
-            values2.Add(Int32.Parse(card.Substring(0,2)));
-        }
-
-        List<string> newSuits = new List<string>();
-        List<int> newVals = new List<int>();
-        List<string> bestSuits = new List<string>();
-        List<int> bestVals = new List<int>();
-        
-        if (p1cards.Count == 4) {
-            suits1.Insert(0, "Null");
-            values1.Insert(0, 0);
-        }
-        else if (p1cards.Count == 6) {
-            bestSuits.Clear();
-            bestSuits.AddRange(suits1);
-            bestSuits.RemoveAt(0);
-            bestVals.Clear();
-            bestVals.AddRange(values1);
-            bestVals.RemoveAt(0);
-            for (int i=1; i<6; i++) {
-                newSuits.Clear();
-                newSuits.AddRange(suits1);
-                newSuits.RemoveAt(i);
-                newVals.Clear();
-                newVals.AddRange(values1);
-                newVals.RemoveAt(i);
-                int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
-                if (x == 2) {
-                    bestSuits.Clear();
-                    bestSuits.AddRange(newSuits);
-                    bestVals.Clear();
-                    bestVals.AddRange(newVals);
-                }
-            }
-            suits1 = bestSuits;
-            values1 = bestVals;
-        }
-        else if (p1cards.Count == 7) {
-            bestSuits.Clear();
-            bestVals.Clear();
-            bestSuits.AddRange(suits1);
-            bestSuits.RemoveAt(0);
-            bestSuits.RemoveAt(1);
-            bestVals.AddRange(values1);
-            bestVals.RemoveAt(0);
-            bestVals.RemoveAt(1);
-            for (int i=0; i<6; i++) {
-                for (int j=i+1; j<7; j++) {
-                    newSuits.Clear();
-                    newVals.Clear();
-                    newSuits.AddRange(suits1);
-                    newSuits.RemoveAt(i);
-                    newSuits.RemoveAt(j-1);
-                    newVals.AddRange(values1);
-                    newVals.RemoveAt(i);
-                    newVals.RemoveAt(j-1);
-                    int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
-                    if (x == 2) {
-                        bestSuits.Clear();
-                        bestSuits.AddRange(newSuits);
-                        bestVals.Clear();
-                        bestVals.AddRange(newVals);
-                    }
-                }
-            }
-            suits1 = bestSuits;
-            values1 = bestVals;
-        }
-
-        bestSuits = new List<string>();
-        bestVals = new List<int>();
-        if (p2cards.Count == 4) {
-            suits2.Insert(0, "Null");
-            values2.Insert(0, 0);
-        }
-        else if (p2cards.Count == 6) {
-            bestSuits.Clear();
-            bestVals.Clear();
-            bestSuits.AddRange(suits2);
-            bestSuits.RemoveAt(0);
-            bestVals.AddRange(values2);
-            bestVals.RemoveAt(0);
-            for (int i=1; i<6; i++) {
-                newSuits.Clear();
-                newVals.Clear();
-                newSuits.AddRange(suits2);
-                newSuits.RemoveAt(i);
-                newVals.AddRange(values2);
-                newVals.RemoveAt(i);
-                int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
-                if (x == 2) {
-                    bestSuits.Clear();
-                    bestSuits.AddRange(newSuits);
-                    bestVals.Clear();
-                    bestVals.AddRange(newVals);
-                }
-            }
-            suits2 = bestSuits;
-            values2 = bestVals;
-        }
-        else if (p2cards.Count == 7) {
-            bestSuits.Clear();
-            bestVals.Clear();
-            bestSuits.AddRange(suits2);
-            bestSuits.RemoveAt(0);
-            bestSuits.RemoveAt(1);
-            bestVals.AddRange(values2);
-            bestVals.RemoveAt(0);
-            bestVals.RemoveAt(1);
-            for (int i=0; i<6; i++) {
-                for (int j=i+1; j<7; j++) {
-                    newSuits.Clear();
-                    newVals.Clear();
-                    newSuits.AddRange(suits2);
-                    newSuits.RemoveAt(i);
-                    newSuits.RemoveAt(j-1);
-                    newVals.AddRange(values2);
-                    newVals.RemoveAt(i);
-                    newVals.RemoveAt(j-1);
-                    int x = CompareHands(bestSuits, bestVals, newSuits, newVals);
-                    if (x == 2) {
-                        bestSuits.Clear();
-                        bestSuits.AddRange(newSuits);
-                        bestVals.Clear();
-                        bestVals.AddRange(newVals);
-                    }
-                }
-            }
-            suits2 = bestSuits;
-            values2 = bestVals;
-        }
-
-        return CompareHands(suits1, values1, suits2, values2);
+        var (wP, handName) = WinningPlayer(player1Score, player1HandName, player2Score, player2HandName); 
+        return (wP, handName);
     }
 
-    public int CompareHands(List<string> suits1, List<int> values1, List<string> suits2, List<int> values2) {
-        // 0: Tie   1: Player1 wins     2: Player2 wins
-        double player1rank = rankHand(suits1, values1);
-        double player2rank = rankHand(suits2, values2);
-        if (player1rank == player2rank) {
-            int i = 4;
-            while (values1[i] == values2[i] && i > 0)
-                i--;
-            if (values1[i] == values2[i])
-                return 0;
-            if (values1[i] > values2[i])
-                return 1;
-            return 2;
-        } 
-        if (player1rank > player2rank)
-            return 1;
-        return 2;
-    }
-
-    public double rankHand(List<string> suits, List<int> values)
+    public List<string> GetCards(string[] hand) 
     {
-        // 9. Royal flush   8. Straight flush   7. Four of kind
-        // 6. Full house    5. Flush    4. Straight     3. Three of kind
-        // 2. Two pair      1. Pair     0. High Card
-        // Plus values of high cards
-        List<double> dvalues = new List<double>();
-        foreach (int val in values)
-            dvalues.Add(Convert.ToDouble(val));
+        List<string> allCards = new List<string>();
+        foreach (string card in streetCards) 
+            if (card != "") allCards.Add(card); 
+        foreach (string card in hand) 
+            if (card != "") allCards.Add(card); 
+        allCards.Sort();
+        return allCards;
+    }
 
-        bool straight = true;
-        for (int i=1; i < 5; i++) {
-            if (values[i] != values[i-1] + 1)
-                straight = false;
+    (string HandName, int HandScore) GetHandInfo(int player)
+    {
+        string[] cards = (player == 1) ? player1Cards : player2Cards;
+        List<string> allCards = GetCards(cards);
+        string hand = String.Join(",", allCards);
+        string handName;
+        int handScore;
+        handNames.TryGetValue(hand, out handName);
+        handScores.TryGetValue(hand, out handScore);
+        return (handName, handScore);
+    }
+
+    // winner logic
+    (int Player, string HandName) WinningPlayer(int player1Score, string player1HandName, int player2Score, string player2HandName)
+    {
+        if (player1Score == 0 && player2Score == 0) {
+            // neither player has a hand
+            return (-1, null);
         }
-        bool flush = true;
-        for (int i=1; i < 5; i++) {
-            if (suits[i] != suits[i-1])
-                flush = false;
+        else if (player2Score == 0 || player1Score < player2Score) {
+            return (1, player1HandName);
         }
-
-        if (straight && flush) {
-            if (values[4] == 14) {
-                return 9.0;
-            }
-            return 8.0;
+        else if (player1Score == 0 || player1Score > player2Score) {
+            return (2, player2HandName);
         }
+        else {
+            // true tie
+            return (0, null);
+        }
+    }
 
-        if (values[0] == dvalues[3] || values[1] == values[4])
-            return 7.0 + dvalues[1]/15;
+    public void HandsUpdated() 
+    {
+        (string HandName, int HandScore) player1Hand = GetHandInfo(1);
+        (string HandName, int HandScore) player2Hand = GetHandInfo(2);
+        string player1HandName = player1Hand.HandName;
+        string player2HandName = player2Hand.HandName;
+        int player1Score = player1Hand.HandScore;
+        int player2Score = player2Hand.HandScore;
 
-        if (values[0] == values[2] && values[3] == values[4])
-            return 6.0 + dvalues[0]/15 + dvalues[3]/225;
-        if (values[0] == values[1] && values[2] == values[4])
-            return 6.0 + dvalues[2]/15 + dvalues[0]/225;
+        var (wP, _) = WinningPlayer(player1Score, player1HandName, player2Score, player2HandName); 
+        winningPlayer = wP;
 
-        if (flush)
-            return 5.0;
-        if (straight)
-            return 4.0;
-
-        if (values[0] == values[2] || values[1] == values[3] || values[2] == values[4])
-            return 3.0 + dvalues[2]/15;
-
-        if (values[0] == values[1] && values[2] == values[3])
-            return 2.0 + dvalues[2]/15 + dvalues[0]/225;
-        if (values[0] == values[1] && values[3] == values[4])
-            return 2.0 + dvalues[3]/15 + dvalues[0]/225;
-        if (values[1] == values[2] && values[3] == values[4])
-            return 2.0 + dvalues[3]/15 + dvalues[1]/225;
-
-        if (values[0] == values[1])
-            return 1.0 + dvalues[0]/15;
-        if (values[1] == values[2])
-            return 1.0 + dvalues[1]/15;
-        if (values[2] == values[3])
-            return 1.0 + dvalues[2]/15;
-        if (values[3] == values[4])
-            return 1.0 + dvalues[3]/15;
-
-        return 0.0;
+        pokerUIManager.UpdateHandFeedback(player1HandName, player2HandName, winningPlayer);
     }
 }
