@@ -20,7 +20,7 @@ public class Timer : MonoBehaviour
         if (debugMode) {
             player1.controlEnabled = true;
             player2.controlEnabled = true;
-            timeLeft=1
+            timeLeft=1;
             return;
         }
         timer.text = Mathf.Round(timeLeft).ToString();
