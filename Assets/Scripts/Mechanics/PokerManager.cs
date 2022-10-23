@@ -32,15 +32,20 @@ public class PokerManager : MonoBehaviour
     void Start()
     {
         // load the hands hashing
-        IEnumerable<String> hands_data_file = System.IO.File.ReadLines("Assets/Resources/hands.csv");
-        foreach (string line in hands_data_file) {
-            string[] tokens = line.Split('\t');
-            string hand = tokens[0]; 
-            int score = Int32.Parse(tokens[1]);
-            string name = tokens[2]; 
-            handNames.Add(hand, name);
-            handScores.Add(hand, score);
+        for (int i = 0; i < 16; i++) {
+            string pieceNumber = ((i < 10) ? "0" : "") + i;
+            IEnumerable<String> hands_data_file = System.IO.File.ReadLines("Assets/Resources/hands" + pieceNumber + ".csv");
+            foreach (string line in hands_data_file) {
+                string[] tokens = line.Split('\t');
+                string hand = tokens[0]; 
+                int score = Int32.Parse(tokens[1]);
+                string name = tokens[2]; 
+                handNames.Add(hand, name);
+                handScores.Add(hand, score);
+            }
         }
+
+        Debug.Log(handNames.Count);
 
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < numStartCards; i++)
