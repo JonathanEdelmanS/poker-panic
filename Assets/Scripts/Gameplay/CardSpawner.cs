@@ -5,6 +5,8 @@ using UnityEngine;
 public class CardSpawner : MonoBehaviour
 {
     public GameObject cardObject;
+    public GameObject despawnRingObject;
+    public Transform gameUI;
     // public float xMin;
     // public float xMax;
     // public float yMin;
@@ -25,6 +27,13 @@ public class CardSpawner : MonoBehaviour
         Card cardProps = card.GetComponent<Card>();
         cardProps.SetTexture(cardName);
         cardProps.index = index;
+        GameObject despawnRing = Instantiate(despawnRingObject, gameUI, true);
+        DespawnRing ring = despawnRing.GetComponent<DespawnRing>();
+        // scale position from real world coordinates to UI pixel coordinates
+        float newX = (position.x + 6.4f) * 2560 / 19.6f;
+        float newY = (position.y + 2.5f) * 1440 / 10.9f;
+        ring.SetPosition(new Vector3(newX, newY));
+        cardProps.GiveRing(despawnRing);
     }
 
     public void RemoveCard(int index) {

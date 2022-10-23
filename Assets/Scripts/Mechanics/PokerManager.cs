@@ -54,7 +54,6 @@ public class PokerManager : MonoBehaviour
         if (totalSpawned >= maxTotalSpawned) return;
         cardSpawner.SpawnCard(DrawCard());
         totalSpawned++;
-        Debug.Log(totalSpawned);
     }
 
     public void UnloadCard()
