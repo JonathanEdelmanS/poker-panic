@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System;
 using System.Collections;
@@ -7,12 +8,14 @@ using Random=UnityEngine.Random;
 
 public class PokerManager : MonoBehaviour
 {
-    List<string> deck = new List<string> {
+    public static HashSet<string> STARTING_DECK = new HashSet<string> {
         "Club01", "Club06", "Club07", "Club08", "Club09", "Club10", "Club11", "Club12", "Club13",
         "Heart01", "Heart06", "Heart07", "Heart08", "Heart09", "Heart10", "Heart11", "Heart12", "Heart13",
         "Spade01", "Spade06", "Spade07", "Spade08", "Spade09", "Spade10", "Spade11", "Spade12", "Spade13",
         "Diamond01", "Diamond06", "Diamond07", "Diamond08", "Diamond09", "Diamond10", "Diamond11", "Diamond12", "Diamond13"
     };
+    List<string> deck = new List<string>(STARTING_DECK);
+    HashSet<string> usedCards = new HashSet<string>();
     public CardSpawner cardSpawner;
     public PokerUIManager pokerUIManager;
     public Dictionary<string, string> handNames = new Dictionary<string, string>();
@@ -28,9 +31,10 @@ public class PokerManager : MonoBehaviour
     int totalSpawned;
     public int maxTotalSpawned = 3;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        Debug.Log("Loading hands");
+        Debug.Log(handNames);
         // load the hands hashing
         for (int i = 0; i < 16; i++) {
             string pieceNumber = ((i < 10) ? "0" : "") + i;
@@ -46,6 +50,11 @@ public class PokerManager : MonoBehaviour
         }
 
         Debug.Log(handNames.Count);
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
 
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < numStartCards; i++)
@@ -76,12 +85,13 @@ public class PokerManager : MonoBehaviour
         totalSpawned++;
     }
 
-    public void UnloadCard()
+    public void UnloadCard(string card)
     {
         totalSpawned--;
+        usedCards.Remove(card);
     }
 
-    public void AddCard()
+    public void AddCard(string card)
     {
         totalSpawned++;
     }
@@ -90,7 +100,11 @@ public class PokerManager : MonoBehaviour
     {
         int index = Random.Range(0, deck.Count - 1);
         string card = deck[index];
+        usedCards.Add(card);
         deck.RemoveAt(index);
+        if (deck.Count == 0) {
+            deck = new List<string>(STARTING_DECK.Where(c => !usedCards.Contains(c)));
+        }
         return card;
     }
 

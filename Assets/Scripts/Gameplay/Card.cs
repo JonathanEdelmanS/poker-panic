@@ -26,9 +26,9 @@ public class Card : MonoBehaviour
     {
         var player = other.gameObject;
         if (player.name != "Player 1" && player.name != "Player 2") return;
-        pokerManager.UnloadCard();
+        pokerManager.UnloadCard(card);
         bool collected = pokerManager.TryGivePlayer(player.name, card);
-        pokerManager.AddCard();
+        pokerManager.AddCard(card);
         if (collected) Collect();
         else pokerManager.SetTouching(player.name, this);
     }
@@ -53,7 +53,7 @@ public class Card : MonoBehaviour
 
     void Unload()
     {
-        pokerManager.UnloadCard();
+        pokerManager.UnloadCard(card);
         pokerManager.SpawnCard();
         cardSpawner.RemoveCard(index);
         Destroy(ring);
