@@ -250,7 +250,7 @@ public class PokerManager : MonoBehaviour
             // neither player has a hand
             return (-1, null);
         }
-        else if (player2Score == 0 || player1Score < player2Score) {
+        else if (player2Score == 0 || player1Score < player2Score && player1Score != 0){
             return (1, player1HandName);
         }
         else if (player1Score == 0 || player1Score > player2Score) {
