@@ -10,12 +10,23 @@ public class PokerUIManager : MonoBehaviour
     public Text player2HandText;
     public Image player1Winning;
     public Image player2Winning;
-    public int winningPlayer = 0;
+
+    public void Reset()
+    {
+        player1HandText.text = "";
+        player2HandText.text = "";
+        player1Winning.enabled = false;
+        player2Winning.enabled = false;
+
+        for (int i = 0; i < 10; i++) {
+            string cardBack = (i < 6) ? "EmptyCard" : "BackColor_Black";
+            cards[i].sprite = Resources.Load<Sprite>(cardBack);
+        }
+    }
 
     public void Start() 
     {
-        player1Winning.enabled = false;
-        player2Winning.enabled = false;
+        Reset();
     }
 
     // betterHand: -1 for neither player having 5 cards, 0 for true tie, 1 for player 1, 2 for player 2
@@ -35,12 +46,12 @@ public class PokerUIManager : MonoBehaviour
         if (player == "Player 1")
         {
             index = 0;
-            cardBack = "BackColor_Blue";
+            cardBack = "EmptyCard";
         }
         else if (player == "Player 2")
         {
             index = 3;
-            cardBack = "BackColor_Red";
+            cardBack = "EmptyCard";
         }
         else
         {

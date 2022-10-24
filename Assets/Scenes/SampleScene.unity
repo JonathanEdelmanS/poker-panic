@@ -454,6 +454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardSpawner: {fileID: 182556968}
   pokerUIManager: {fileID: 1269687977}
+  timer: {fileID: 159908990}
   times:
   - 10
   - 20
@@ -655,9 +656,9 @@ MonoBehaviour:
   player1: {fileID: 838423048}
   player2: {fileID: 599868427}
   pokerManager: {fileID: 87469946}
-  buttonToStart: {fileID: 0}
-  startTime: 60
+  duration: 60
   debugMode: 0
+  active: 0
 --- !u!1 &180357685
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,6 +831,7 @@ MonoBehaviour:
   cardObject: {fileID: 1923023563}
   despawnRingObject: {fileID: 297941432}
   gameUI: {fileID: 1304115379}
+  activeObjs: []
 --- !u!4 &182556969
 Transform:
   m_ObjectHideFlags: 0
@@ -2253,7 +2255,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1b5edfaa43a45d342b122c301a8184e0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3425,6 +3427,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextScene: -1
   SceneLoadedTime: 0
+  pm: {fileID: 0}
+  p1Cooldown: {fileID: 0}
+  p2Cooldown: {fileID: 0}
+  player1Controller: {fileID: 0}
+  player2Controller: {fileID: 0}
 --- !u!1 &517227212
 GameObject:
   m_ObjectHideFlags: 0
@@ -4397,6 +4404,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextScene: 0
   SceneLoadedTime: 0
+  pm: {fileID: 87469946}
+  p1Cooldown: {fileID: 278794236}
+  p2Cooldown: {fileID: 1678390171}
+  player1Controller: {fileID: 838423048}
+  player2Controller: {fileID: 599868427}
 --- !u!114 &786270580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4443,7 +4455,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 786270579}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: PlayGame
+        m_MethodName: ResetGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4821,7 +4833,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0802620b3a2859f45bdd189c7bc35d02, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5345,7 +5357,7 @@ GameObject:
   - component: {fileID: 1199700686}
   - component: {fileID: 1199700685}
   m_Layer: 5
-  m_Name: Replay Button (1)
+  m_Name: Main menu button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5386,6 +5398,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextScene: -1
   SceneLoadedTime: 0
+  pm: {fileID: 87469946}
+  p1Cooldown: {fileID: 0}
+  p2Cooldown: {fileID: 0}
+  player1Controller: {fileID: 0}
+  player2Controller: {fileID: 0}
 --- !u!114 &1199700686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5432,7 +5449,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1199700685}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: PlayGame
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5544,7 +5561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0802620b3a2859f45bdd189c7bc35d02, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5711,7 +5728,6 @@ MonoBehaviour:
   player2HandText: {fileID: 67261597}
   player1Winning: {fileID: 1134580680}
   player2Winning: {fileID: 1715823646}
-  winningPlayer: 0
 --- !u!1 &1304115375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5873,7 +5889,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1b5edfaa43a45d342b122c301a8184e0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13176,7 +13192,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0802620b3a2859f45bdd189c7bc35d02, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13252,7 +13268,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1b5edfaa43a45d342b122c301a8184e0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aaee98cc869caa44ba13102b55c0ec7a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

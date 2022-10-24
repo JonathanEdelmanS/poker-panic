@@ -21,6 +21,7 @@ public class PokerManager : MonoBehaviour
     public Dictionary<string, string> handNames = new Dictionary<string, string>();
     public Dictionary<string, int> handScores = new Dictionary<string, int>();
     int winningPlayer = -1;
+    public Timer timer;
     public float[] times = new float[4];
     public string[] player1Cards = new string[3] { "", "", "" };
     public string[] player2Cards = new string[3] { "", "", "" };
@@ -31,10 +32,8 @@ public class PokerManager : MonoBehaviour
     int totalSpawned;
     public int maxTotalSpawned = 3;
 
-    void Awake()
+    void LoadHandTable()
     {
-        Debug.Log("Loading hands");
-        Debug.Log(handNames);
         // load the hands hashing
         for (int i = 0; i < 16; i++) {
             string pieceNumber = ((i < 10) ? "0" : "") + i;
@@ -48,13 +47,22 @@ public class PokerManager : MonoBehaviour
                 handScores.Add(hand, score);
             }
         }
-
-        Debug.Log(handNames.Count);
+        Debug.Log("Hands loaded");
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void BeginGame()
     {
+        Debug.Log("New game");
+        // reset everything
+        deck = new List<string>(STARTING_DECK);
+        usedCards.Clear();
+        cardSpawner.Clear();
+        pokerUIManager.Reset();
+        player1Cards = new string[3] { "", "", "" };
+        player2Cards = new string[3] { "", "", "" };
+        streetCards = new string[4] { "", "", "", "" };
+        winningPlayer = -1;
+        totalSpawned = 0;
 
         // spawn in 3 cards at the beginning of the game
         for (int i = 0; i < numStartCards; i++)
@@ -62,20 +70,29 @@ public class PokerManager : MonoBehaviour
             SpawnCard();
         }
         totalSpawned = numStartCards;
+
+        timer.StartTimer();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        LoadHandTable();
+        BeginGame();
     }
 
     void Update()
     {
-        float thisFrame = Time.time;
-        float lastFrame = Time.time - Time.deltaTime;
-        for (int i = 0; i < 4; i++)
-        {
-            float time = times[i];
-            if (thisFrame > time && lastFrame < time)
-            {
-                FlipStreetCard(i);
-            }
-        }
+        // float thisFrame = Time.time;
+        // float lastFrame = Time.time - Time.deltaTime;
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     float time = times[i];
+        //     if (thisFrame > time && lastFrame < time)
+        //     {
+        //         FlipStreetCard(i);
+        //     }
+        // }
     }
 
     public void SpawnCard()
@@ -108,7 +125,7 @@ public class PokerManager : MonoBehaviour
         return card;
     }
 
-    void FlipStreetCard(int index)
+    public void FlipStreetCard(int index)
     {
         string card = DrawCard();
         streetCards[index] = card;
@@ -241,7 +258,7 @@ public class PokerManager : MonoBehaviour
         }
         else {
             // true tie
-            return (0, null);
+            return (0, player1HandName);
         }
     }
 

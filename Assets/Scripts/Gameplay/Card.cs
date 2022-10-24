@@ -57,7 +57,9 @@ public class Card : MonoBehaviour
         pokerManager.SpawnCard();
         cardSpawner.RemoveCard(index);
         Destroy(ring);
+        cardSpawner.activeObjs.Remove(ring);
         Destroy(gameObject);
+        cardSpawner.activeObjs.Remove(gameObject);
     }
 
     void Update()

@@ -8,11 +8,16 @@ public class CardSpawner : MonoBehaviour
     public GameObject cardObject;
     public GameObject despawnRingObject;
     public Transform gameUI;
-    // public float xMin;
-    // public float xMax;
-    // public float yMin;
-    // public float yMax;
     List<int> cardPositions = new List<int>();
+    public List<GameObject> activeObjs = new List<GameObject>();
+
+    public void Clear()
+    {
+        cardPositions.Clear();
+        foreach (GameObject obj in activeObjs) {
+            Destroy(obj);
+        }
+    }
 
     // Spawn a random card at a random location within bounds (and remove card from deck)
     public void SpawnCard(string cardName)
@@ -25,10 +30,12 @@ public class CardSpawner : MonoBehaviour
         cardPositions.Add(index);
         Vector3 position = new Vector3(xpos[index], ypos[index], -1.5f);
         GameObject card = Instantiate(cardObject, position, Quaternion.identity);
+        activeObjs.Add(card);
         Card cardProps = card.GetComponent<Card>();
         cardProps.SetTexture(cardName);
         cardProps.index = index;
         GameObject despawnRing = Instantiate(despawnRingObject, gameUI, true);
+        activeObjs.Add(despawnRing);
         DespawnRing ring = despawnRing.GetComponent<DespawnRing>();
         // scale position from real world coordinates to UI pixel coordinates
         float newX = (position.x + 6.4f) * 2560 / 19.6f;
